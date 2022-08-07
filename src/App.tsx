@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
-import { useForm, useFieldArray, Controller, useWatch,FormProvider } from "react-hook-form";
-import ReactDOM from "react-dom";
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import "./App.css";
+import './App.css';
 import { X } from './Fieldtable/X'
+import * as yup from 'yup'
 
 let renderCount = 0;
 
+const schema = yup.object({
+	test: yup.array().of(yup.object({
+		firstName: yup.string().required(),
+		lastName: yup.string().required(),
+	}))
+})
  function App() {
 	 const [tableData,setTableData] = useState([{ firstName: "Bill", lastName: "Luo" }])
 	const methods = useForm({
+		resolver:yupResolver(schema),
 		defaultValues: {
 			test: tableData
 		}
 	});
 	
 	
-	const onSubmit = (data) => console.log("data", data);
+	const onSubmit = (data,y) => {
+		console.log('data',data)
+		// console.log('y',y)
+	}
 	
 	
 	renderCount++;
@@ -24,6 +35,9 @@ let renderCount = 0;
 	return (
 		<form onSubmit={methods.handleSubmit(onSubmit)}>
 			<h1>Field Array </h1>
+			<div>
+			{methods.formState.errors.test?.message}
+			</div>
 			<p>The following demo allow you to delete, append, prepend items</p>
 			<span className="counter">Render Count: {renderCount}</span>
 			<button onClick={() =>{
@@ -33,7 +47,7 @@ let renderCount = 0;
 			<FormProvider {...methods}>
 				<X></X>
 			</FormProvider>
-			<input type="submit" />
+			<input type="submit"  />
 		</form>
 	);
 }

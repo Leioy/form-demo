@@ -2,7 +2,7 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import React from 'react'
 
 const X = () =>{
-	const {control,register,reset}= useFormContext()
+	const {control,register,reset,formState:{errors}}= useFormContext()
 	const {
 		fields,
 		append,
@@ -16,6 +16,7 @@ const X = () =>{
 		control,
 		name: "test"
 	});
+	console.log('errors',errors)
 return <>
 	<ul>
 		{fields.map((item, index) => {
@@ -28,6 +29,7 @@ return <>
 						name={`test.${index}.lastName`}
 						control={control}
 					/>
+					{/*<div>{errors?.test?.[0].firstName}</div>*/}
 					<button type="button" onClick={() => remove(index)}>
 						Delete
 					</button>
