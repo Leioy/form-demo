@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import 'antd/dist/antd.css';
 
 import './App.css';
 import { X } from './Fieldtable/X'
@@ -12,10 +13,11 @@ const schema = yup.object({
 	test: yup.array().of(yup.object({
 		firstName: yup.string().required(),
 		lastName: yup.string().required(),
+		digits:yup.number().when('lastName',{is:"Double",then:yup.number().required()})
 	}))
 })
  function App() {
-	 const [tableData,setTableData] = useState([{ firstName: "Bill", lastName: "Luo" }])
+	 const [tableData,setTableData] = useState([{ firstName: "Bill", lastName: "Double",digits:2 }])
 	const methods = useForm({
 		resolver:yupResolver(schema),
 		defaultValues: {

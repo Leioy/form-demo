@@ -1,8 +1,14 @@
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
-import React from 'react'
+import { Controller, useFieldArray, useFormContext, useWatch } from 'react-hook-form'
+import React, { useEffect } from 'react'
+import { Input, Select } from 'antd';
 
+const options = [
+	{label:'Long',value:'Long'},
+	{label:'Double',value:'Double'},
+	{label:'String',value:'String'},
+]
 const X = () =>{
-	const {control,register,reset,formState:{errors}}= useFormContext()
+	const {control,register,reset,formState,setValue}= useFormContext()
 	const {
 		fields,
 		append,
@@ -11,12 +17,18 @@ const X = () =>{
 		swap,
 		move,
 		insert,
+		update,
 		replace
 	} = useFieldArray({
 		control,
 		name: "test"
 	});
-	console.log('errors',errors)
+	// console.log('errors',formState.errors)
+	const output = useWatch({
+		name:'test',control
+	})
+	// console.log('output',output)
+	
 return <>
 	<ul>
 		{fields.map((item, index) => {
@@ -25,11 +37,16 @@ return <>
 					<input {...register(`test.${index}.firstName`)} />
 					
 					<Controller
-						render={({ field }) => <input {...field} />}
+						render={({ field:{onChange,...rest} }) => <Select onChange={(value) =>{
+							console.log('item',item)
+							// rest to original
+							// update(index,{...item,[`test.${index}.digits`]:item.digits})
+							setValue(`test.${index}.lastName`,value)
+						}} options={options} {...rest} />}
 						name={`test.${index}.lastName`}
 						control={control}
 					/>
-					{/*<div>{errors?.test?.[0].firstName}</div>*/}
+					{output[index]?.lastName === 'Double' &&<Controller name={`test.${index}.digits`} render={({ field }) => <Input{...field}/>}/>}
 					<button type="button" onClick={() => remove(index)}>
 						Delete
 					</button>
@@ -41,7 +58,7 @@ return <>
 		<button
 			type="button"
 			onClick={() => {
-				append({ firstName: "appendBill", lastName: "appendLuo" });
+				append({ firstName: "appendBill", lastName: "Double",digits:0 });
 			}}
 		>
 			append
